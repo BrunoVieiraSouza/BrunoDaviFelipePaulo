@@ -335,12 +335,12 @@ struct ShoppingCell: View {
     var item: ShoppingItem
     
     var body: some View {
-        HStack {
+        HStack(spacing: 10) {
             if let selectedImage = item.selectedImage {
                 Image(uiImage: selectedImage)
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: 50, height: 50)
+                    .scaledToFill()
+                    .frame(width: 60, height: 60)
                     .padding(.trailing, 10)
             } else {
                 Image(systemName: "photo")
@@ -350,15 +350,19 @@ struct ShoppingCell: View {
                     .padding(.trailing, 10)
             }
             
-            VStack(alignment: .leading) {
+            HStack(spacing: 20) {
                 Text(item.title)
                     .font(.headline)
-                
-                Text("R$ \(calculateTotalValueWithTax(), specifier: "%.2f")") // Problema 2 - Correção na exibição do valor total
-                    .font(.subheadline)
             }
             
-            Spacer()
+            HStack {
+                
+                Text("$ \(calculateTotalValueWithTax(), specifier: "%.2f")") // Problema 2 - Correção na exibição do valor total
+                    .font(.subheadline)
+                    .padding(.leading, 10)
+            }
+            
+            //Spacer()
         }
         .padding(10)
     }
