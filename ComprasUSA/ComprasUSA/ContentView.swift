@@ -280,10 +280,11 @@ struct ResumoCompraView: View {
                 let itemTax = Double(item.itemTax) ?? 0.0
                 
                 if let paidWithCard = item.paidWithCard, paidWithCard {
-                    let iof = itemValue * ((iofPercentage + itemTax) / 100.0)
-                    return itemValue + iof
+                    let totalValueWithTax = itemValue + (itemValue * (itemTax / 100.0))
+                    let iof = totalValueWithTax * (iofPercentage / 100.0)
+                    return totalValueWithTax + iof
                 } else {
-                    return itemValue + (itemValue * (itemTax / 100.0)) // Problema 2 - Correção no cálculo do imposto do estado
+                    return itemValue + (itemValue * (itemTax / 100))
                 }
             }
             .reduce(0.0, +)
@@ -340,7 +341,7 @@ struct ShoppingCell: View {
                 Text(item.title)
                     .font(.headline)
                 
-                Text("R$ \(calculateTotalValue(), specifier: "%.2f")") // Problema 2 - Correção na exibição do valor total
+                Text("R$ \(calculateTotalValueWithTax(), specifier: "%.2f")") // Problema 2 - Correção na exibição do valor total
                     .font(.subheadline)
             }
             
@@ -350,7 +351,7 @@ struct ShoppingCell: View {
     }
     
     // Problema 2 - Função para calcular o valor total com a taxa do imposto do estado
-    private func calculateTotalValue() -> Double {
+    private func calculateTotalValueWithTax() -> Double {
         let itemValue = Double(item.itemValue) ?? 0.0
         let itemTax = Double(item.itemTax) ?? 0.0
         return itemValue + (itemValue * (itemTax / 100.0))
