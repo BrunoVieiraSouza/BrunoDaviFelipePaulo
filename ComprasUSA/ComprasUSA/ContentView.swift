@@ -292,25 +292,28 @@ struct ResumoCompraView: View {
         let finalValueInReais = (totalDollarValueWithIOF) * dollarRate
         
         Form {
-            Section(header: Text("Resumo da Compra")) {
+            Section(header: Text("")) {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("1. Valor dos Produtos em Dólar ($)")
+                    Text("Valor dos Produtos em Dólar ($)")
+                        .foregroundColor(.black)
+                    Text("$ \(totalDollarValue, specifier: "%.2f")")
                         .foregroundColor(.blue)
-                    Text("\(totalDollarValue, specifier: "%.2f")")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 18))
-                    
-                    Text("2. Valor dos Produtos com Imposto e IOF em Dólar ($)")
+                        .font(.system(size: 40))
+                        .bold()
+                    Spacer()
+                    Text("Valor dos Produtos com Imposto e IOF em Dólar ($)")
+                        .foregroundColor(.black)
+                    Text("$ \(totalDollarValueWithIOF, specifier: "%.2f")")
                         .foregroundColor(.red)
-                    Text("\(totalDollarValueWithIOF, specifier: "%.2f")")
-                        .foregroundColor(.red)
-                        .font(.system(size: 18))
-                    
-                    Text("3. Valor Final em Reais")
+                        .font(.system(size: 40))
+                        .bold()
+                    Spacer()
+                    Text("Valor Final em Reais")
+                        .foregroundColor(.black)
+                    Text("R$ \(finalValueInReais, specifier: "%.2f")")
                         .foregroundColor(.green)
-                    Text("\(finalValueInReais, specifier: "%.2f")")
-                        .foregroundColor(.green)
-                        .font(.system(size: 18))
+                        .font(.system(size: 40))
+                        .bold()
                 }
             }
         }
