@@ -25,7 +25,7 @@ class ShoppingItem: Identifiable, ObservableObject {
     @Published var title: String
     @Published var itemTax: String
     @Published var itemValue: String
-    @Published var paidWithCard: Bool
+    @Published var paidWithCard: Bool?
     @Published var selectedImage: UIImage?
 
     init(imageName: String, title: String, itemTax: String, itemValue: String, paidWithCard: Bool, selectedImage: UIImage?) {
@@ -153,7 +153,7 @@ struct AddItemView: View {
             _itemName = State(initialValue: selectedItem.title)
             _itemTax = State(initialValue: selectedItem.itemTax)
             _itemValue = State(initialValue: selectedItem.itemValue)
-            _paidWithCard = State(initialValue: selectedItem.paidWithCard)
+            _paidWithCard = State(initialValue: selectedItem.paidWithCard ?? false)
             _selectedImage = State(initialValue: selectedItem.selectedImage)
         } else {
             _itemName = State(initialValue: "")
@@ -270,12 +270,16 @@ struct ResumoCompraView: View {
             .reduce(0.0, +)
 
         let totalDollarValueWithIOF = viewModel.shoppingList
-            .filter { $0.paidWithCard }
-            .compactMap { item in
+            .compactMap { item -> Double in
                 let itemValue = Double(item.itemValue) ?? 0.0
                 let itemTax = Double(item.itemTax) ?? 0.0
-                let iof = (itemValue) * ((iofPercentage + itemTax) / 100.0)
-                return itemValue + iof
+
+                if let paidWithCard = item.paidWithCard, paidWithCard {
+                    let iof = itemValue * ((iofPercentage + itemTax) / 100.0)
+                    return itemValue + iof
+                } else {
+                    return itemValue
+                }
             }
             .reduce(0.0, +)
 
