@@ -144,13 +144,14 @@ struct AddItemView: View {
     @State private var itemValue: String
     @State private var paidWithCard: Bool
     @State private var selectedImage: UIImage?
-    
-    @Environment(\.presentationMode) var presentationMode // Adicionado para fechar a tela de cadastro
-    
+    @State private var isImagePickerPresented = false
+
+    @Environment(\.presentationMode) var presentationMode
+
     init(viewModel: ShoppingItemViewModel, selectedItem: Binding<ShoppingItem?>, item: ShoppingItem?) {
         self.viewModel = viewModel
         self._selectedItem = selectedItem
-        
+
         if let selectedItem = item {
             _itemName = State(initialValue: selectedItem.title)
             _itemTax = State(initialValue: selectedItem.itemTax)
@@ -162,10 +163,9 @@ struct AddItemView: View {
             _itemTax = State(initialValue: "0.0")
             _itemValue = State(initialValue: "0.0")
             _paidWithCard = State(initialValue: false)
-            //_selectedImage = nil
         }
     }
-    
+
     var body: some View {
         Form {
             Section(header: Text("NOME DO PRODUTO")) {
@@ -179,43 +179,55 @@ struct AddItemView: View {
                 TextField("Valor do Produto", text: $itemValue)
                     .keyboardType(.decimalPad)
             }
-            
+
             Section(header: Text("MEIO DE PAGAMENTO")) {
                 Toggle("Pagou com Cartão", isOn: $paidWithCard)
             }
-            
+
             Section(header: Text("FOTO")) {
-                ImagePicker(image: $selectedImage)
+                Button(action: {
+                    isImagePickerPresented = true
+                }) {
+                    Text("Escolher Foto")
+                }
+                .sheet(isPresented: $isImagePickerPresented) {
+                    ImagePicker(image: $selectedImage)
+                }
+
+                if let selectedImage = selectedImage {
+                    Image(uiImage: selectedImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                        .padding(.top, 10)
+                }
             }
-            
+
             Section {
                 Button(action: {
                     self.addItem()
-                    self.presentationMode.wrappedValue.dismiss() // Problema 1 - Fechar a tela de cadastro
+                    self.presentationMode.wrappedValue.dismiss()
                 }) {
                     Text("Cadastrar")
                 }
                 .disabled(!formIsValid())
             }
         }
-        .navigationTitle("Adicionar Produto")
+        .navigationTitle("Cadastro de Produto")
     }
-    
+
     private func addItem() {
         guard formIsValid() else { return }
-        
+
         if let selectedItem = selectedItem {
-            // Atualiza o item existente no ViewModel
             if let index = viewModel.shoppingList.firstIndex(where: { $0.id == selectedItem.id }) {
                 viewModel.shoppingList[index].title = itemName
                 viewModel.shoppingList[index].itemTax = itemTax
                 viewModel.shoppingList[index].itemValue = itemValue
                 viewModel.shoppingList[index].paidWithCard = paidWithCard
                 viewModel.shoppingList[index].selectedImage = selectedImage
-                // Atualize outros campos conforme necessário
             }
         } else {
-            // Adiciona um novo item ao ViewModel
             let newItem = ShoppingItem(
                 imageName: "placeholder",
                 title: itemName,
@@ -224,21 +236,19 @@ struct AddItemView: View {
                 paidWithCard: paidWithCard,
                 selectedImage: selectedImage
             )
-            
+
             viewModel.shoppingList.append(newItem)
         }
-        
-        // Reset form fields
+
         itemName = ""
         itemTax = "0.0"
         itemValue = "0.0"
         paidWithCard = false
         selectedImage = nil
-        
-        // Desativa a seleção do item
+
         selectedItem = nil
     }
-    
+
     private func formIsValid() -> Bool {
         return !itemName.isEmpty && !itemTax.isEmpty && !itemValue.isEmpty
     }
