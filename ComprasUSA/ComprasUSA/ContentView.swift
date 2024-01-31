@@ -8,11 +8,11 @@
 import SwiftUI
 import UIKit
 
-class ShoppingItem: Identifiable {
+class ShoppingItem: Identifiable, ObservableObject {
     var id = UUID()
-    var imageName: String
-    var title: String
-    var description: String
+    @Published var imageName: String
+    @Published var title: String
+    @Published var description: String
 
     init(imageName: String, title: String, description: String) {
         self.imageName = imageName
@@ -62,15 +62,14 @@ struct ImagePicker: UIViewControllerRepresentable {
 }
 
 class ShoppingItemViewModel: ObservableObject {
-    @Published var shoppingList = [
-        ShoppingItem(imageName: "apple", title: "Maçã", description: "5 unidades"),
-        ShoppingItem(imageName: "banana", title: "Banana", description: "1 cacho"),
+    @Published var shoppingList: [ShoppingItem] = [
         // Adicione mais itens conforme necessário
     ]
 }
 
 struct ContentView: View {
     @ObservedObject var viewModel = ShoppingItemViewModel()
+    @State private var selectedItem: ShoppingItem?
 
     var body: some View {
         TabView {
@@ -78,8 +77,11 @@ struct ContentView: View {
                 List {
                     Section(header: Text("Lista de Compra")) {
                         ForEach(viewModel.shoppingList) { item in
-                            NavigationLink(destination: Text("Detalhes do Item \(item.title)")) {
+                            NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem)) {
                                 ShoppingCell(item: item)
+                                    .onTapGesture {
+                                        self.selectedItem = item
+                                    }
                             }
                         }
                         .onDelete { indexSet in
@@ -88,7 +90,7 @@ struct ContentView: View {
                     }
                 }
                 .navigationBarItems(trailing:
-                    NavigationLink(destination: AddItemView(viewModel: viewModel)) {
+                    NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem)) {
                         Image(systemName: "plus")
                     }
                 )
@@ -96,15 +98,15 @@ struct ContentView: View {
                 .navigationTitle("Lista de Compra")
             }
             .tabItem {
-                Image(systemName: "list.bullet")
-                Text("Lista")
+                Image(systemName: "cart")
+                Text("Compras")
             }
 
             NavigationView {
                 AjustesView()
             }
             .tabItem {
-                Image(systemName: "square.and.pencil")
+                Image(systemName: "gear")
                 Text("Ajustes")
             }
 
@@ -112,8 +114,8 @@ struct ContentView: View {
                 ResumoCompraView()
             }
             .tabItem {
-                Image(systemName: "star")
-                Text("Resumo")
+                Image(systemName: "dollarsign.square")
+                Text("Total da compra")
             }
         }
     }
@@ -121,25 +123,49 @@ struct ContentView: View {
 
 struct AddItemView: View {
     @ObservedObject var viewModel: ShoppingItemViewModel
+    @Binding var selectedItem: ShoppingItem?
 
-    @State private var itemName = ""
-    @State private var itemTax = ""
-    @State private var itemValue = ""
-    @State private var paidWithCard = false
+    @State private var itemName: String
+    @State private var itemTax: String
+    @State private var itemValue: String
+    @State private var paidWithCard: Bool
     @State private var selectedImage: UIImage?
+
+    init(viewModel: ShoppingItemViewModel, selectedItem: Binding<ShoppingItem?>) {
+        self.viewModel = viewModel
+        self._selectedItem = selectedItem
+        if let selectedItem = selectedItem.wrappedValue {
+            _itemName = State(initialValue: selectedItem.title)
+            _itemTax = State(initialValue: "") // Preencha conforme necessário
+            _itemValue = State(initialValue: "") // Preencha conforme necessário
+            _paidWithCard = State(initialValue: false) // Preencha conforme necessário
+        } else {
+            _itemName = State(initialValue: "")
+            _itemTax = State(initialValue: "")
+            _itemValue = State(initialValue: "")
+            _paidWithCard = State(initialValue: false)
+        }
+    }
 
     var body: some View {
         Form {
-            Section(header: Text("Detalhes do Produto")) {
+            Section(header: Text("NOME DO PRODUTO")) {
                 TextField("Nome do Produto", text: $itemName)
+            }
+            Section(header: Text("IMPOSTO DO ESTADO %")) {
                 TextField("Imposto do Estado", text: $itemTax)
                     .keyboardType(.decimalPad)
+            }
+            Section(header: Text("VALOR DO PRODUTO (U$)")) {
                 TextField("Valor do Produto", text: $itemValue)
                     .keyboardType(.decimalPad)
+            }
+            
+            Section(header: Text("MEIO DE PAGAMENTO")) {
                 Toggle("Pagou com Cartão", isOn: $paidWithCard)
             }
 
-            Section(header: Text("Adicionar Foto")) {
+            Section(header: Text("FOTO")) {
                 ImagePicker(image: $selectedImage)
             }
 
@@ -158,13 +184,21 @@ struct AddItemView: View {
     private func addItem() {
         guard formIsValid() else { return }
 
-        let newItem = ShoppingItem(
-            imageName: "placeholder",
-            title: itemName,
-            description: "Taxa: \(itemTax), Valor: \(itemValue), Cartão: \(paidWithCard ? "Sim" : "Não")"
-        )
+        if let selectedItem = selectedItem {
+            // Atualiza o item existente
+            selectedItem.title = itemName
+            selectedItem.description = "Taxa: \(itemTax), Valor: \(itemValue), Cartão: \(paidWithCard ? "Sim" : "Não")"
+            // Atualize outros campos conforme necessário
+        } else {
+            // Adiciona um novo item
+            let newItem = ShoppingItem(
+                imageName: "placeholder",
+                title: itemName,
+                description: "Taxa: \(itemTax), Valor: \(itemValue), Cartão: \(paidWithCard ? "Sim" : "Não")"
+            )
 
-        viewModel.shoppingList.append(newItem)
+            viewModel.shoppingList.append(newItem)
+        }
 
         // Reset form fields
         itemName = ""
@@ -172,6 +206,9 @@ struct AddItemView: View {
         itemValue = ""
         paidWithCard = false
         selectedImage = nil
+
+        // Desativa a seleção do item
+        selectedItem = nil
     }
 
     private func formIsValid() -> Bool {
@@ -185,9 +222,12 @@ struct AjustesView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Ajustes")) {
+            Section(header: Text("COTAÇÃO DO DÓLAR (R$)")) {
                 TextField("Cotação do Dólar", text: $cotacaoDolar)
                     .keyboardType(.decimalPad)
+            }
+            
+            Section(header: Text("IOF (%)")) {
                 TextField("Valor do IOF", text: $valorIOF)
                     .keyboardType(.decimalPad)
             }
@@ -199,26 +239,27 @@ struct AjustesView: View {
 struct ResumoCompraView: View {
     var body: some View {
         Form {
-            Section(header: Text("Resumo da Compra")) {
+            Section(header: Text("")) {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Valor dos Produtos ($)")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.black)
                     Text("1,698.00")
                         .foregroundColor(.blue)
-                }
-
-                VStack(alignment: .leading, spacing: 10) {
+                        .font(.system(size: 28))
+                        .fontWeight(.bold)
+                    
                     Text("Total de Impostos ($)")
-                        .foregroundColor(.red)
+                        .foregroundColor(.black)
                     Text("1,698.00")
                         .foregroundColor(.red)
-                }
-
-                VStack(alignment: .leading, spacing: 10) {
+                        .fontWeight(.bold)
+                        .font(.system(size: 28))
                     Text("Valor Final em Reais")
-                        .foregroundColor(.green)
+                        .foregroundColor(.black)
                     Text("1,698.00")
                         .foregroundColor(.green)
+                        .fontWeight(.bold)
+                        .font(.system(size: 28))
                 }
             }
         }
@@ -235,16 +276,19 @@ struct ShoppingCell: View {
             Image(systemName: item.imageName)
                 .resizable()
                 .frame(width: 50, height: 50)
+                .padding(.trailing, 10)  // Adiciona um espaço à direita da imagem
+
             VStack(alignment: .leading) {
                 Text(item.title)
                     .font(.headline)
-                Text(item.description)
-                    .font(.subheadline)
             }
-            Spacer()
-            Image(systemName: "chevron.right")
-                .foregroundColor(.gray)
+
+            Spacer()  // Preenche o espaço entre o texto e o valor
+
+            Text(item.description)  // Substitua pelo valor real do produto
+                .font(.headline)
         }
+        .padding(10)  // Adiciona espaçamento geral à célula
     }
 }
 
@@ -256,7 +300,7 @@ struct ContentView_Previews: PreviewProvider {
 
 struct AddItemView_Previews: PreviewProvider {
     static var previews: some View {
-        AddItemView(viewModel: ShoppingItemViewModel())
+        AddItemView(viewModel: ShoppingItemViewModel(), selectedItem: .constant(nil))
     }
 }
 
