@@ -8,16 +8,33 @@
 import SwiftUI
 import UIKit
 
+struct ShoppingApp: App {
+    @AppStorage("dollarRate") var dollarRate: Double = 5.0
+    @AppStorage("iofPercentage") var iofPercentage: Double = 6.38
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+
 class ShoppingItem: Identifiable, ObservableObject {
     var id = UUID()
     @Published var imageName: String
     @Published var title: String
-    @Published var description: String
+    @Published var itemTax: String
+    @Published var itemValue: String
+    @Published var paidWithCard: Bool
+    @Published var selectedImage: UIImage?
 
-    init(imageName: String, title: String, description: String) {
+    init(imageName: String, title: String, itemTax: String, itemValue: String, paidWithCard: Bool, selectedImage: UIImage?) {
         self.imageName = imageName
         self.title = title
-        self.description = description
+        self.itemTax = itemTax
+        self.itemValue = itemValue
+        self.paidWithCard = paidWithCard
+        self.selectedImage = selectedImage
     }
 }
 
@@ -33,7 +50,7 @@ struct ImagePicker: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let uiImage = info[.originalImage] as? UIImage {
                 parent.image = uiImage
             }
@@ -62,9 +79,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 }
 
 class ShoppingItemViewModel: ObservableObject {
-    @Published var shoppingList: [ShoppingItem] = [
-        // Adicione mais itens conforme necessário
-    ]
+    @Published var shoppingList: [ShoppingItem] = []
 }
 
 struct ContentView: View {
@@ -77,7 +92,7 @@ struct ContentView: View {
                 List {
                     Section(header: Text("Lista de Compra")) {
                         ForEach(viewModel.shoppingList) { item in
-                            NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem)) {
+                            NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: item)) {
                                 ShoppingCell(item: item)
                                     .onTapGesture {
                                         self.selectedItem = item
@@ -90,7 +105,7 @@ struct ContentView: View {
                     }
                 }
                 .navigationBarItems(trailing:
-                    NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem)) {
+                    NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: nil)) {
                         Image(systemName: "plus")
                     }
                 )
@@ -111,7 +126,7 @@ struct ContentView: View {
             }
 
             NavigationView {
-                ResumoCompraView()
+                ResumoCompraView(viewModel: viewModel)
             }
             .tabItem {
                 Image(systemName: "dollarsign.square")
@@ -124,26 +139,28 @@ struct ContentView: View {
 struct AddItemView: View {
     @ObservedObject var viewModel: ShoppingItemViewModel
     @Binding var selectedItem: ShoppingItem?
-
     @State private var itemName: String
     @State private var itemTax: String
     @State private var itemValue: String
     @State private var paidWithCard: Bool
     @State private var selectedImage: UIImage?
 
-    init(viewModel: ShoppingItemViewModel, selectedItem: Binding<ShoppingItem?>) {
+    init(viewModel: ShoppingItemViewModel, selectedItem: Binding<ShoppingItem?>, item: ShoppingItem?) {
         self.viewModel = viewModel
         self._selectedItem = selectedItem
-        if let selectedItem = selectedItem.wrappedValue {
+
+        if let selectedItem = item {
             _itemName = State(initialValue: selectedItem.title)
-            _itemTax = State(initialValue: "") // Preencha conforme necessário
-            _itemValue = State(initialValue: "") // Preencha conforme necessário
-            _paidWithCard = State(initialValue: false) // Preencha conforme necessário
+            _itemTax = State(initialValue: selectedItem.itemTax)
+            _itemValue = State(initialValue: selectedItem.itemValue)
+            _paidWithCard = State(initialValue: selectedItem.paidWithCard)
+            _selectedImage = State(initialValue: selectedItem.selectedImage)
         } else {
             _itemName = State(initialValue: "")
-            _itemTax = State(initialValue: "")
-            _itemValue = State(initialValue: "")
+            _itemTax = State(initialValue: "0.0")
+            _itemValue = State(initialValue: "0.0")
             _paidWithCard = State(initialValue: false)
+            //_selectedImage = nil
         }
     }
 
@@ -160,7 +177,7 @@ struct AddItemView: View {
                 TextField("Valor do Produto", text: $itemValue)
                     .keyboardType(.decimalPad)
             }
-            
+
             Section(header: Text("MEIO DE PAGAMENTO")) {
                 Toggle("Pagou com Cartão", isOn: $paidWithCard)
             }
@@ -187,14 +204,20 @@ struct AddItemView: View {
         if let selectedItem = selectedItem {
             // Atualiza o item existente
             selectedItem.title = itemName
-            selectedItem.description = "Taxa: \(itemTax), Valor: \(itemValue), Cartão: \(paidWithCard ? "Sim" : "Não")"
+            selectedItem.itemTax = itemTax
+            selectedItem.itemValue = itemValue
+            selectedItem.paidWithCard = paidWithCard
+            selectedItem.selectedImage = selectedImage
             // Atualize outros campos conforme necessário
         } else {
             // Adiciona um novo item
             let newItem = ShoppingItem(
                 imageName: "placeholder",
                 title: itemName,
-                description: "Taxa: \(itemTax), Valor: \(itemValue), Cartão: \(paidWithCard ? "Sim" : "Não")"
+                itemTax: itemTax,
+                itemValue: itemValue,
+                paidWithCard: paidWithCard,
+                selectedImage: selectedImage
             )
 
             viewModel.shoppingList.append(newItem)
@@ -202,8 +225,8 @@ struct AddItemView: View {
 
         // Reset form fields
         itemName = ""
-        itemTax = ""
-        itemValue = ""
+        itemTax = "0.0"
+        itemValue = "0.0"
         paidWithCard = false
         selectedImage = nil
 
@@ -217,18 +240,18 @@ struct AddItemView: View {
 }
 
 struct AjustesView: View {
-    @State private var cotacaoDolar = ""
-    @State private var valorIOF = ""
+    @AppStorage("dollarRate") var dollarRate: Double = 5.0
+    @AppStorage("iofPercentage") var iofPercentage: Double = 6.38
 
     var body: some View {
         Form {
             Section(header: Text("COTAÇÃO DO DÓLAR (R$)")) {
-                TextField("Cotação do Dólar", text: $cotacaoDolar)
+                TextField("Cotação do Dólar", value: $dollarRate, formatter: NumberFormatter())
                     .keyboardType(.decimalPad)
             }
-            
+
             Section(header: Text("IOF (%)")) {
-                TextField("Valor do IOF", text: $valorIOF)
+                TextField("Valor do IOF", value: $iofPercentage, formatter: NumberFormatter())
                     .keyboardType(.decimalPad)
             }
         }
@@ -237,29 +260,55 @@ struct AjustesView: View {
 }
 
 struct ResumoCompraView: View {
+    @ObservedObject var viewModel: ShoppingItemViewModel
+    @AppStorage("dollarRate") var dollarRate: Double = 5.5
+    @AppStorage("iofPercentage") var iofPercentage: Double = 6.38
+
     var body: some View {
+        let totalDollarValue = viewModel.shoppingList
+            .compactMap { Double($0.itemValue) }
+            .reduce(0.0, +)
+
+        let totalDollarValueWithIOF = viewModel.shoppingList
+            .filter { $0.paidWithCard }
+            .compactMap { item in
+                let itemValue = Double(item.itemValue) ?? 0.0
+                let itemTax = Double(item.itemTax) ?? 0.0
+                let iof = (itemValue) * ((iofPercentage + itemTax) / 100.0)
+                return itemValue + iof
+            }
+            .reduce(0.0, +)
+
+        let totalDollarValueWithTax = viewModel.shoppingList
+            .compactMap { item in
+                let itemValue = Double(item.itemValue) ?? 0.0
+                let itemTax = Double(item.itemTax) ?? 0.0
+                return itemValue + itemTax
+            }
+            .reduce(0.0, +)
+
+        let finalValueInReais = (totalDollarValueWithIOF) * dollarRate
+
         Form {
-            Section(header: Text("")) {
+            Section(header: Text("Resumo da Compra")) {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Valor dos Produtos ($)")
-                        .foregroundColor(.black)
-                    Text("1,698.00")
+                    Text("1. Valor dos Produtos em Dólar ($)")
                         .foregroundColor(.blue)
-                        .font(.system(size: 28))
-                        .fontWeight(.bold)
-                    
-                    Text("Total de Impostos ($)")
-                        .foregroundColor(.black)
-                    Text("1,698.00")
+                    Text("\(totalDollarValue, specifier: "%.2f")")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 18))
+
+                    Text("2. Valor dos Produtos com Imposto e IOF em Dólar ($)")
                         .foregroundColor(.red)
-                        .fontWeight(.bold)
-                        .font(.system(size: 28))
-                    Text("Valor Final em Reais")
-                        .foregroundColor(.black)
-                    Text("1,698.00")
+                    Text("\(totalDollarValueWithIOF, specifier: "%.2f")")
+                        .foregroundColor(.red)
+                        .font(.system(size: 18))
+
+                    Text("3. Valor Final em Reais")
                         .foregroundColor(.green)
-                        .fontWeight(.bold)
-                        .font(.system(size: 28))
+                    Text("\(finalValueInReais, specifier: "%.2f")")
+                        .foregroundColor(.green)
+                        .font(.system(size: 18))
                 }
             }
         }
@@ -267,28 +316,36 @@ struct ResumoCompraView: View {
     }
 }
 
-
 struct ShoppingCell: View {
     var item: ShoppingItem
 
     var body: some View {
         HStack {
-            Image(systemName: item.imageName)
-                .resizable()
-                .frame(width: 50, height: 50)
-                .padding(.trailing, 10)  // Adiciona um espaço à direita da imagem
+            if let selectedImage = item.selectedImage {
+                Image(uiImage: selectedImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 50, height: 50)
+                    .padding(.trailing, 10)
+            } else {
+                Image(systemName: "photo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 50, height: 50)
+                    .padding(.trailing, 10)
+            }
 
             VStack(alignment: .leading) {
                 Text(item.title)
                     .font(.headline)
             }
 
-            Spacer()  // Preenche o espaço entre o texto e o valor
+            Spacer()
 
-            Text(item.description)  // Substitua pelo valor real do produto
+            Text("R$ \(item.itemValue)")
                 .font(.headline)
         }
-        .padding(10)  // Adiciona espaçamento geral à célula
+        .padding(10)
     }
 }
 
@@ -300,7 +357,7 @@ struct ContentView_Previews: PreviewProvider {
 
 struct AddItemView_Previews: PreviewProvider {
     static var previews: some View {
-        AddItemView(viewModel: ShoppingItemViewModel(), selectedItem: .constant(nil))
+        AddItemView(viewModel: ShoppingItemViewModel(), selectedItem: .constant(nil), item: nil)
     }
 }
 
@@ -308,8 +365,4 @@ struct AjustesView_Previews: PreviewProvider {
     static var previews: some View {
         AjustesView()
     }
-}
-
-#Preview {
-    ContentView()
 }
