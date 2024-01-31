@@ -11,7 +11,7 @@ import UIKit
 struct ShoppingApp: App {
     @AppStorage("dollarRate") var dollarRate: Double = 5.0
     @AppStorage("iofPercentage") var iofPercentage: Double = 6.38
-
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -27,7 +27,7 @@ class ShoppingItem: Identifiable, ObservableObject {
     @Published var itemValue: String
     @Published var paidWithCard: Bool?
     @Published var selectedImage: UIImage?
-
+    
     init(imageName: String, title: String, itemTax: String, itemValue: String, paidWithCard: Bool, selectedImage: UIImage?) {
         self.imageName = imageName
         self.title = title
@@ -40,39 +40,39 @@ class ShoppingItem: Identifiable, ObservableObject {
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
-
+    
     @Environment(\.presentationMode) var presentationMode
-
+    
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         var parent: ImagePicker
-
+        
         init(parent: ImagePicker) {
             self.parent = parent
         }
-
+        
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let uiImage = info[.originalImage] as? UIImage {
                 parent.image = uiImage
             }
-
+            
             parent.presentationMode.wrappedValue.dismiss()
         }
-
+        
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.presentationMode.wrappedValue.dismiss()
         }
     }
-
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
     }
-
+    
     func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
         return picker
     }
-
+    
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePicker>) {
         // Do nothing here
     }
@@ -85,7 +85,7 @@ class ShoppingItemViewModel: ObservableObject {
 struct ContentView: View {
     @ObservedObject var viewModel = ShoppingItemViewModel()
     @State private var selectedItem: ShoppingItem?
-
+    
     var body: some View {
         TabView {
             NavigationView {
@@ -105,9 +105,9 @@ struct ContentView: View {
                     }
                 }
                 .navigationBarItems(trailing:
-                    NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: nil)) {
-                        Image(systemName: "plus")
-                    }
+                                        NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: nil)) {
+                    Image(systemName: "plus")
+                }
                 )
                 .listStyle(InsetGroupedListStyle())
                 .navigationTitle("Lista de Compra")
@@ -116,7 +116,7 @@ struct ContentView: View {
                 Image(systemName: "cart")
                 Text("Compras")
             }
-
+            
             NavigationView {
                 AjustesView()
             }
@@ -124,7 +124,7 @@ struct ContentView: View {
                 Image(systemName: "gear")
                 Text("Ajustes")
             }
-
+            
             NavigationView {
                 ResumoCompraView(viewModel: viewModel)
             }
@@ -144,11 +144,13 @@ struct AddItemView: View {
     @State private var itemValue: String
     @State private var paidWithCard: Bool
     @State private var selectedImage: UIImage?
-
+    
+    @Environment(\.presentationMode) var presentationMode // Adicionado para fechar a tela de cadastro
+    
     init(viewModel: ShoppingItemViewModel, selectedItem: Binding<ShoppingItem?>, item: ShoppingItem?) {
         self.viewModel = viewModel
         self._selectedItem = selectedItem
-
+        
         if let selectedItem = item {
             _itemName = State(initialValue: selectedItem.title)
             _itemTax = State(initialValue: selectedItem.itemTax)
@@ -163,7 +165,7 @@ struct AddItemView: View {
             //_selectedImage = nil
         }
     }
-
+    
     var body: some View {
         Form {
             Section(header: Text("NOME DO PRODUTO")) {
@@ -177,18 +179,19 @@ struct AddItemView: View {
                 TextField("Valor do Produto", text: $itemValue)
                     .keyboardType(.decimalPad)
             }
-
+            
             Section(header: Text("MEIO DE PAGAMENTO")) {
                 Toggle("Pagou com Cartão", isOn: $paidWithCard)
             }
-
+            
             Section(header: Text("FOTO")) {
                 ImagePicker(image: $selectedImage)
             }
-
+            
             Section {
                 Button(action: {
                     self.addItem()
+                    self.presentationMode.wrappedValue.dismiss() // Problema 1 - Fechar a tela de cadastro
                 }) {
                     Text("Cadastrar")
                 }
@@ -197,20 +200,22 @@ struct AddItemView: View {
         }
         .navigationTitle("Adicionar Produto")
     }
-
+    
     private func addItem() {
         guard formIsValid() else { return }
-
+        
         if let selectedItem = selectedItem {
-            // Atualiza o item existente
-            selectedItem.title = itemName
-            selectedItem.itemTax = itemTax
-            selectedItem.itemValue = itemValue
-            selectedItem.paidWithCard = paidWithCard
-            selectedItem.selectedImage = selectedImage
-            // Atualize outros campos conforme necessário
+            // Atualiza o item existente no ViewModel
+            if let index = viewModel.shoppingList.firstIndex(where: { $0.id == selectedItem.id }) {
+                viewModel.shoppingList[index].title = itemName
+                viewModel.shoppingList[index].itemTax = itemTax
+                viewModel.shoppingList[index].itemValue = itemValue
+                viewModel.shoppingList[index].paidWithCard = paidWithCard
+                viewModel.shoppingList[index].selectedImage = selectedImage
+                // Atualize outros campos conforme necessário
+            }
         } else {
-            // Adiciona um novo item
+            // Adiciona um novo item ao ViewModel
             let newItem = ShoppingItem(
                 imageName: "placeholder",
                 title: itemName,
@@ -219,21 +224,21 @@ struct AddItemView: View {
                 paidWithCard: paidWithCard,
                 selectedImage: selectedImage
             )
-
+            
             viewModel.shoppingList.append(newItem)
         }
-
+        
         // Reset form fields
         itemName = ""
         itemTax = "0.0"
         itemValue = "0.0"
         paidWithCard = false
         selectedImage = nil
-
+        
         // Desativa a seleção do item
         selectedItem = nil
     }
-
+    
     private func formIsValid() -> Bool {
         return !itemName.isEmpty && !itemTax.isEmpty && !itemValue.isEmpty
     }
@@ -242,14 +247,14 @@ struct AddItemView: View {
 struct AjustesView: View {
     @AppStorage("dollarRate") var dollarRate: Double = 5.0
     @AppStorage("iofPercentage") var iofPercentage: Double = 6.38
-
+    
     var body: some View {
         Form {
             Section(header: Text("COTAÇÃO DO DÓLAR (R$)")) {
                 TextField("Cotação do Dólar", value: $dollarRate, formatter: NumberFormatter())
                     .keyboardType(.decimalPad)
             }
-
+            
             Section(header: Text("IOF (%)")) {
                 TextField("Valor do IOF", value: $iofPercentage, formatter: NumberFormatter())
                     .keyboardType(.decimalPad)
@@ -263,36 +268,28 @@ struct ResumoCompraView: View {
     @ObservedObject var viewModel: ShoppingItemViewModel
     @AppStorage("dollarRate") var dollarRate: Double = 5.5
     @AppStorage("iofPercentage") var iofPercentage: Double = 6.38
-
+    
     var body: some View {
         let totalDollarValue = viewModel.shoppingList
             .compactMap { Double($0.itemValue) }
             .reduce(0.0, +)
-
+        
         let totalDollarValueWithIOF = viewModel.shoppingList
             .compactMap { item -> Double in
                 let itemValue = Double(item.itemValue) ?? 0.0
                 let itemTax = Double(item.itemTax) ?? 0.0
-
+                
                 if let paidWithCard = item.paidWithCard, paidWithCard {
                     let iof = itemValue * ((iofPercentage + itemTax) / 100.0)
                     return itemValue + iof
                 } else {
-                    return itemValue
+                    return itemValue + (itemValue * (itemTax / 100.0)) // Problema 2 - Correção no cálculo do imposto do estado
                 }
             }
             .reduce(0.0, +)
-
-        let totalDollarValueWithTax = viewModel.shoppingList
-            .compactMap { item in
-                let itemValue = Double(item.itemValue) ?? 0.0
-                let itemTax = Double(item.itemTax) ?? 0.0
-                return itemValue + itemTax
-            }
-            .reduce(0.0, +)
-
+        
         let finalValueInReais = (totalDollarValueWithIOF) * dollarRate
-
+        
         Form {
             Section(header: Text("Resumo da Compra")) {
                 VStack(alignment: .leading, spacing: 10) {
@@ -301,13 +298,13 @@ struct ResumoCompraView: View {
                     Text("\(totalDollarValue, specifier: "%.2f")")
                         .foregroundColor(.blue)
                         .font(.system(size: 18))
-
+                    
                     Text("2. Valor dos Produtos com Imposto e IOF em Dólar ($)")
                         .foregroundColor(.red)
                     Text("\(totalDollarValueWithIOF, specifier: "%.2f")")
                         .foregroundColor(.red)
                         .font(.system(size: 18))
-
+                    
                     Text("3. Valor Final em Reais")
                         .foregroundColor(.green)
                     Text("\(finalValueInReais, specifier: "%.2f")")
@@ -322,7 +319,7 @@ struct ResumoCompraView: View {
 
 struct ShoppingCell: View {
     var item: ShoppingItem
-
+    
     var body: some View {
         HStack {
             if let selectedImage = item.selectedImage {
@@ -338,18 +335,25 @@ struct ShoppingCell: View {
                     .frame(width: 50, height: 50)
                     .padding(.trailing, 10)
             }
-
+            
             VStack(alignment: .leading) {
                 Text(item.title)
                     .font(.headline)
+                
+                Text("R$ \(calculateTotalValue(), specifier: "%.2f")") // Problema 2 - Correção na exibição do valor total
+                    .font(.subheadline)
             }
-
+            
             Spacer()
-
-            Text("R$ \(item.itemValue)")
-                .font(.headline)
         }
         .padding(10)
+    }
+    
+    // Problema 2 - Função para calcular o valor total com a taxa do imposto do estado
+    private func calculateTotalValue() -> Double {
+        let itemValue = Double(item.itemValue) ?? 0.0
+        let itemTax = Double(item.itemTax) ?? 0.0
+        return itemValue + (itemValue * (itemTax / 100.0))
     }
 }
 
