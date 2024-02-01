@@ -84,30 +84,34 @@ class ShoppingItemViewModel: ObservableObject {
 
 struct ContentView: View {
     @ObservedObject var viewModel = ShoppingItemViewModel()
+    @State private var isPresented = false
+
     @State private var selectedItem: ShoppingItem?
-    
+
     var body: some View {
         TabView {
             NavigationView {
                 List {
-                    Section(header: Text("Lista de Compra")) {
-                        ForEach(viewModel.shoppingList) { item in
-                            NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: item)) {
-                                ShoppingCell(item: item)
-                                    .onTapGesture {
-                                        self.selectedItem = item
-                                    }
-                            }
+                    ForEach(viewModel.shoppingList) { item in
+                        NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: item)) {
+                            ShoppingCell(item: item)
+                                .onTapGesture {
+                                    self.selectedItem = item
+                                    isPresented.toggle()
+                                }
                         }
-                        .onDelete { indexSet in
-                            viewModel.shoppingList.remove(atOffsets: indexSet)
-                        }
+                    }
+                    .onDelete { indexSet in
+                        viewModel.shoppingList.remove(atOffsets: indexSet)
                     }
                 }
                 .navigationBarItems(trailing:
-                                        NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: nil)) {
-                    Image(systemName: "plus")
-                }
+                    Button(action: {
+                        self.selectedItem = nil
+                        isPresented.toggle()
+                    }) {
+                        Image(systemName: "plus")
+                    }
                 )
                 .listStyle(InsetGroupedListStyle())
                 .navigationTitle("Lista de Compra")
@@ -116,7 +120,6 @@ struct ContentView: View {
                 Image(systemName: "cart")
                 Text("Compras")
             }
-            
             NavigationView {
                 AjustesView()
             }
@@ -132,6 +135,9 @@ struct ContentView: View {
                 Image(systemName: "dollarsign.square")
                 Text("Total da compra")
             }
+        }
+        .sheet(isPresented: $isPresented) {
+                    AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: selectedItem)
         }
     }
 }
@@ -221,11 +227,19 @@ struct AddItemView: View {
 
         if let selectedItem = selectedItem {
             if let index = viewModel.shoppingList.firstIndex(where: { $0.id == selectedItem.id }) {
-                viewModel.shoppingList[index].title = itemName
-                viewModel.shoppingList[index].itemTax = itemTax
-                viewModel.shoppingList[index].itemValue = itemValue
-                viewModel.shoppingList[index].paidWithCard = paidWithCard
-                viewModel.shoppingList[index].selectedImage = selectedImage
+                
+                viewModel.shoppingList.remove(at: index)
+                
+                let newItem = ShoppingItem(
+                    imageName: "placeholder",
+                    title: itemName,
+                    itemTax: itemTax,
+                    itemValue: itemValue,
+                    paidWithCard: paidWithCard,
+                    selectedImage: selectedImage
+                )
+
+                viewModel.shoppingList.append(newItem)
             }
         } else {
             let newItem = ShoppingItem(
