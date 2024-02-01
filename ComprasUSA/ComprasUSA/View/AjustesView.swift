@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct AjustesView: View {
-    @AppStorage("dollarRate") var dollarRate: Double = 5.0
-    @AppStorage("iofPercentage") var iofPercentage: Double = 6.38
+    @AppStorage("dollarRate") var dollarRate: Double = 4.9
+    @AppStorage("iofPercentage") var iofPercentage: Double = 5.38
     
     var body: some View {
         Form {
