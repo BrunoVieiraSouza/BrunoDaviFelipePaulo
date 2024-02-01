@@ -19,7 +19,7 @@ struct AjustesView: View {
             }
             
             Section(header: Text("IOF (%)")) {
-                TextField("Valor do IOF", value: $iofPercentage, formatter: NumberFormatter())
+                TextField("Valor do IOF", value: $iofPercentage, formatter: NumberFormatter(numberStyle: .decimal))
                     .keyboardType(.decimalPad)
             }
         }

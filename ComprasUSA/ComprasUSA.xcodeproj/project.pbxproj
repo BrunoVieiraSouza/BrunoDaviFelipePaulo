@@ -48,6 +48,52 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B0C4DE0E2B6BE20600E88A5D /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				B0C4DE002B6BCE9D00E88A5D /* ShoppingItem.swift */,
+				B0ECEDED2B693836007A8F5D /* ComprasUSAApp.swift */,
+				B0C4DDFE2B6BCE7900E88A5D /* ShoppingApp.swift */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
+		B0C4DE0F2B6BE24700E88A5D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				B0C4DE022B6BCED100E88A5D /* ImagePicker.swift */,
+				B0C4DE042B6BCF0700E88A5D /* ShoppingItemViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		B0C4DE102B6BE25E00E88A5D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				B0ECEDEF2B693836007A8F5D /* ContentView.swift */,
+				B0C4DE062B6BCF3800E88A5D /* AddItemView.swift */,
+				B0C4DE082B6BCF8E00E88A5D /* AjustesView.swift */,
+				B0C4DE0A2B6BCFC600E88A5D /* ResumoCompraView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		B0C4DE112B6BE27E00E88A5D /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				B0C4DE0C2B6BD00100E88A5D /* ShoppingCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		B0C4DE122B6BE2A400E88A5D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B0ECEDF12B693837007A8F5D /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		B0ECEDE12B693835007A8F5D = {
 			isa = PBXGroup;
 			children = (
@@ -67,18 +113,12 @@
 		B0ECEDEC2B693836007A8F5D /* ComprasUSA */ = {
 			isa = PBXGroup;
 			children = (
-				B0ECEDEF2B693836007A8F5D /* ContentView.swift */,
-				B0ECEDED2B693836007A8F5D /* ComprasUSAApp.swift */,
-				B0C4DE022B6BCED100E88A5D /* ImagePicker.swift */,
-				B0C4DDFE2B6BCE7900E88A5D /* ShoppingApp.swift */,
-				B0C4DE002B6BCE9D00E88A5D /* ShoppingItem.swift */,
-				B0ECEDF12B693837007A8F5D /* Assets.xcassets */,
+				B0C4DE122B6BE2A400E88A5D /* Resources */,
+				B0C4DE0E2B6BE20600E88A5D /* Manager */,
+				B0C4DE112B6BE27E00E88A5D /* Cell */,
+				B0C4DE102B6BE25E00E88A5D /* View */,
+				B0C4DE0F2B6BE24700E88A5D /* ViewModel */,
 				B0ECEDF32B693837007A8F5D /* Preview Content */,
-				B0C4DE042B6BCF0700E88A5D /* ShoppingItemViewModel.swift */,
-				B0C4DE062B6BCF3800E88A5D /* AddItemView.swift */,
-				B0C4DE082B6BCF8E00E88A5D /* AjustesView.swift */,
-				B0C4DE0A2B6BCFC600E88A5D /* ResumoCompraView.swift */,
-				B0C4DE0C2B6BD00100E88A5D /* ShoppingCell.swift */,
 			);
 			path = ComprasUSA;
 			sourceTree = "<group>";
