@@ -85,6 +85,9 @@ struct AddItemView: View {
             }
         }
         .navigationTitle("Cadastro de Produto")
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
     
     private func addItem() {

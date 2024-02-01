@@ -24,11 +24,20 @@ struct AjustesView: View {
             }
         }
         .navigationTitle("Ajustes")
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
 }
 
 struct AjustesView_Previews: PreviewProvider {
     static var previews: some View {
         AjustesView()
+    }
+}
+
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
