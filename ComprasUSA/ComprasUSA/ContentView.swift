@@ -93,18 +93,18 @@ struct ContentView: View {
             NavigationView {
                 List {
                     ForEach(viewModel.shoppingList) { item in
-                        NavigationLink(destination: AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: item)) {
-                            ShoppingCell(item: item)
-                                .onTapGesture {
-                                    self.selectedItem = item
-                                    isPresented.toggle()
-                                }
-                        }
+                        ShoppingCell(item: item)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                self.selectedItem = item
+                                isPresented.toggle()
+                            }
                     }
                     .onDelete { indexSet in
                         viewModel.shoppingList.remove(atOffsets: indexSet)
                     }
                 }
+                .listStyle(PlainListStyle())
                 .navigationBarItems(trailing:
                     Button(action: {
                         self.selectedItem = nil
@@ -120,6 +120,7 @@ struct ContentView: View {
                 Image(systemName: "cart")
                 Text("Compras")
             }
+            
             NavigationView {
                 AjustesView()
             }
@@ -137,7 +138,7 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $isPresented) {
-                    AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: selectedItem)
+            AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: selectedItem)
         }
     }
 }
@@ -347,41 +348,39 @@ struct ResumoCompraView: View {
 
 struct ShoppingCell: View {
     var item: ShoppingItem
-    
+
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 20) {
             if let selectedImage = item.selectedImage {
                 Image(uiImage: selectedImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 60, height: 60)
-                    .padding(.trailing, 10)
+                    .frame(width: 80, height: 80)
+                    .cornerRadius(8)
             } else {
                 Image(systemName: "photo")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 50, height: 50)
-                    .padding(.trailing, 10)
             }
-            
-            HStack(spacing: 20) {
+
+            VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
                     .font(.headline)
-            }
-            
-            HStack {
                 
-                Text("$ \(calculateTotalValueWithTax(), specifier: "%.2f")") // Problema 2 - Correção na exibição do valor total
+                Text("$ \(calculateTotalValueWithTax(), specifier: "%.2f")")
                     .font(.subheadline)
-                    .padding(.leading, 10)
+                    .foregroundColor(.secondary)
             }
-            
-            //Spacer()
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .foregroundColor(.gray)
         }
         .padding(10)
     }
     
-    // Problema 2 - Função para calcular o valor total com a taxa do imposto do estado
     private func calculateTotalValueWithTax() -> Double {
         let itemValue = Double(item.itemValue) ?? 0.0
         let itemTax = Double(item.itemTax) ?? 0.0
