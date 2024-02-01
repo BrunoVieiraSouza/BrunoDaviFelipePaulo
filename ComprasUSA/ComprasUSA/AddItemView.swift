@@ -45,10 +45,16 @@ struct AddItemView: View {
             Section(header: Text("IMPOSTO DO ESTADO %")) {
                 TextField("Imposto do Estado", text: $itemTax)
                     .keyboardType(.decimalPad)
+                    .onTapGesture {
+                        hideKeyboard()
+                    }
             }
             Section(header: Text("VALOR DO PRODUTO (U$)")) {
                 TextField("Valor do Produto", text: $itemValue)
                     .keyboardType(.decimalPad)
+                    .onTapGesture {
+                        hideKeyboard()
+                    }
             }
             
             Section(header: Text("MEIO DE PAGAMENTO")) {
@@ -85,9 +91,6 @@ struct AddItemView: View {
             }
         }
         .navigationTitle("Cadastro de Produto")
-        .onTapGesture {
-            hideKeyboard()
-        }
     }
     
     private func addItem() {

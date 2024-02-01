@@ -14,7 +14,7 @@ struct AjustesView: View {
     var body: some View {
         Form {
             Section(header: Text("COTAÇÃO DO DÓLAR (R$)")) {
-                TextField("Cotação do Dólar", value: $dollarRate, formatter: NumberFormatter())
+                TextField("Cotação do Dólar", value: $dollarRate, formatter: NumberFormatter(numberStyle: .decimal))
                     .keyboardType(.decimalPad)
             }
             
@@ -39,5 +39,14 @@ struct AjustesView_Previews: PreviewProvider {
 extension View {
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+extension NumberFormatter {
+    convenience init(numberStyle: Style, locale: Locale = .current) {
+        self.init()
+        self.locale = locale
+        self.maximumFractionDigits = 2
+        self.numberStyle = numberStyle
     }
 }
