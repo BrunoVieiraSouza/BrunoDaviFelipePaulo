@@ -167,8 +167,8 @@ struct AddItemView: View {
             _selectedImage = State(initialValue: selectedItem.selectedImage)
         } else {
             _itemName = State(initialValue: "")
-            _itemTax = State(initialValue: "0.0")
-            _itemValue = State(initialValue: "0.0")
+            _itemTax = State(initialValue: "")
+            _itemValue = State(initialValue: "")
             _paidWithCard = State(initialValue: false)
         }
     }
