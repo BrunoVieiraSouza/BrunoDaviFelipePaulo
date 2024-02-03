@@ -8,22 +8,25 @@
 
 import SwiftUI
 import UIKit
+import SwiftData
 
-class ShoppingItem: Identifiable, ObservableObject {
+@Model
+class ShoppingItem {
     var id = UUID()
-    @Published var imageName: String
-    @Published var title: String
-    @Published var itemTax: String
-    @Published var itemValue: String
-    @Published var paidWithCard: Bool?
-    @Published var selectedImage: UIImage?
+    var imageName: String
+    var title: String
+    var itemTax: String
+    var itemValue: String
+    var paidWithCard: Bool
+    var selectedImage: Data?
     
-    init(imageName: String,
-         title: String,
-         itemTax: String,
-         itemValue: String,
-         paidWithCard: Bool,
-         selectedImage: UIImage?) {
+    init(imageName: String = "",
+         title: String = "",
+         itemTax: String = "",
+         itemValue: String = "",
+         paidWithCard: Bool = false,
+         selectedImage: Data? = nil
+    ) {
         self.imageName = imageName
         self.title = title
         self.itemTax = itemTax

@@ -11,7 +11,7 @@
 		B0C4DE012B6BCE9D00E88A5D /* ShoppingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C4DE002B6BCE9D00E88A5D /* ShoppingItem.swift */; };
 		B0C4DE032B6BCED100E88A5D /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C4DE022B6BCED100E88A5D /* ImagePicker.swift */; };
 		B0C4DE052B6BCF0700E88A5D /* ShoppingItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C4DE042B6BCF0700E88A5D /* ShoppingItemViewModel.swift */; };
-		B0C4DE072B6BCF3800E88A5D /* AddItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C4DE062B6BCF3800E88A5D /* AddItemView.swift */; };
+		B0C4DE072B6BCF3800E88A5D /* FormItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C4DE062B6BCF3800E88A5D /* FormItemView.swift */; };
 		B0C4DE092B6BCF8E00E88A5D /* AjustesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C4DE082B6BCF8E00E88A5D /* AjustesView.swift */; };
 		B0C4DE0B2B6BCFC600E88A5D /* ResumoCompraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C4DE0A2B6BCFC600E88A5D /* ResumoCompraView.swift */; };
 		B0C4DE0D2B6BD00100E88A5D /* ShoppingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C4DE0C2B6BD00100E88A5D /* ShoppingCell.swift */; };
@@ -26,7 +26,7 @@
 		B0C4DE002B6BCE9D00E88A5D /* ShoppingItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingItem.swift; sourceTree = "<group>"; };
 		B0C4DE022B6BCED100E88A5D /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		B0C4DE042B6BCF0700E88A5D /* ShoppingItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingItemViewModel.swift; sourceTree = "<group>"; };
-		B0C4DE062B6BCF3800E88A5D /* AddItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemView.swift; sourceTree = "<group>"; };
+		B0C4DE062B6BCF3800E88A5D /* FormItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormItemView.swift; sourceTree = "<group>"; };
 		B0C4DE082B6BCF8E00E88A5D /* AjustesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AjustesView.swift; sourceTree = "<group>"; };
 		B0C4DE0A2B6BCFC600E88A5D /* ResumoCompraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumoCompraView.swift; sourceTree = "<group>"; };
 		B0C4DE0C2B6BD00100E88A5D /* ShoppingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingCell.swift; sourceTree = "<group>"; };
@@ -48,6 +48,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		552CEC6A2B6EA69900CFBC4A /* Item */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Item;
+			sourceTree = "<group>";
+		};
 		B0C4DE0E2B6BE20600E88A5D /* Manager */ = {
 			isa = PBXGroup;
 			children = (
@@ -71,7 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				B0ECEDEF2B693836007A8F5D /* ContentView.swift */,
-				B0C4DE062B6BCF3800E88A5D /* AddItemView.swift */,
+				B0C4DE062B6BCF3800E88A5D /* FormItemView.swift */,
 				B0C4DE082B6BCF8E00E88A5D /* AjustesView.swift */,
 				B0C4DE0A2B6BCFC600E88A5D /* ResumoCompraView.swift */,
 			);
@@ -113,6 +120,7 @@
 		B0ECEDEC2B693836007A8F5D /* ComprasUSA */ = {
 			isa = PBXGroup;
 			children = (
+				552CEC6A2B6EA69900CFBC4A /* Item */,
 				B0C4DE122B6BE2A400E88A5D /* Resources */,
 				B0C4DE0E2B6BE20600E88A5D /* Manager */,
 				B0C4DE112B6BE27E00E88A5D /* Cell */,
@@ -204,7 +212,7 @@
 				B0C4DE012B6BCE9D00E88A5D /* ShoppingItem.swift in Sources */,
 				B0C4DE0B2B6BCFC600E88A5D /* ResumoCompraView.swift in Sources */,
 				B0C4DE052B6BCF0700E88A5D /* ShoppingItemViewModel.swift in Sources */,
-				B0C4DE072B6BCF3800E88A5D /* AddItemView.swift in Sources */,
+				B0C4DE072B6BCF3800E88A5D /* FormItemView.swift in Sources */,
 				B0ECEDF02B693836007A8F5D /* ContentView.swift in Sources */,
 				B0C4DE032B6BCED100E88A5D /* ImagePicker.swift in Sources */,
 				B0ECEDEE2B693836007A8F5D /* ComprasUSAApp.swift in Sources */,
@@ -344,12 +352,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ComprasUSA/Preview Content\"";
+				DEVELOPMENT_TEAM = K6UD7YGN5Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -371,12 +381,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ComprasUSA/Preview Content\"";
+				DEVELOPMENT_TEAM = K6UD7YGN5Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

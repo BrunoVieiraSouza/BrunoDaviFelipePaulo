@@ -12,12 +12,14 @@ struct ShoppingCell: View {
     
     var body: some View {
         HStack(spacing: 20) {
-            if let selectedImage = item.selectedImage {
-                Image(uiImage: selectedImage)
+            if let data = item.selectedImage,
+               let uiimage = UIImage(data: data) {
+                Image(uiImage: uiimage)
                     .resizable()
                     .scaledToFill()
                     .frame(width: 80, height: 80)
                     .cornerRadius(8)
+                
             } else {
                 Image(systemName: "photo")
                     .resizable()

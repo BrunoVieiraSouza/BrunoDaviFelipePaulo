@@ -7,40 +7,26 @@
 
 import SwiftUI
 import UIKit
+import SwiftData
+
+
+enum NavigationType: Hashable {
+    case detail(ShoppingItem)
+    case form(ShoppingItem?)
+}
 
 struct ContentView: View {
-    @ObservedObject var viewModel = ShoppingItemViewModel()
+    @Environment(\.modelContext) var modelContext
+    
+    @Query private var items: [ShoppingItem]
+    
     @State private var isPresented = false
-
-    @State private var selectedItem: ShoppingItem?
+    @State private var selectedItem: ShoppingItem = ShoppingItem()
 
     var body: some View {
         TabView {
             NavigationView {
-                List {
-                    ForEach(viewModel.shoppingList) { item in
-                        ShoppingCell(item: item)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                self.selectedItem = item
-                                isPresented.toggle()
-                            }
-                    }
-                    .onDelete { indexSet in
-                        viewModel.shoppingList.remove(atOffsets: indexSet)
-                    }
-                }
-                .listStyle(PlainListStyle())
-                .navigationBarItems(trailing:
-                    Button(action: {
-                        self.selectedItem = nil
-                        isPresented.toggle()
-                    }) {
-                        Image(systemName: "plus")
-                    }
-                )
-                .listStyle(InsetGroupedListStyle())
-                .navigationTitle("Lista de Compra")
+                list
             }
             .tabItem {
                 Image(systemName: "cart")
@@ -56,7 +42,7 @@ struct ContentView: View {
             }
             
             NavigationView {
-                ResumoCompraView(viewModel: viewModel)
+//                ResumoCompraView(viewModel: viewModel)
             }
             .tabItem {
                 Image(systemName: "dollarsign.square")
@@ -64,7 +50,39 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $isPresented) {
-            AddItemView(viewModel: viewModel, selectedItem: $selectedItem, item: selectedItem)
+            FormItemView(item: selectedItem)
+        }
+    }
+    
+    private var list: some View {
+        List {
+            ForEach(items) { item in
+                ShoppingCell(item: item)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selectedItem = item
+                        isPresented.toggle()
+                    }
+            }.onDelete(perform: deleteItem)
+        }
+        .listStyle(PlainListStyle())
+        .navigationBarItems(trailing:
+            Button(action: {
+                selectedItem = ShoppingItem()
+                isPresented.toggle()
+            }) {
+                Image(systemName: "plus")
+            }
+        )
+        .listStyle(InsetGroupedListStyle())
+        .navigationTitle("Lista de compras")
+    }
+    
+    
+    private func deleteItem(_ indexSet: IndexSet) {
+        for index in indexSet {
+            let item = items[index]
+            modelContext.delete(item)
         }
     }
 }
