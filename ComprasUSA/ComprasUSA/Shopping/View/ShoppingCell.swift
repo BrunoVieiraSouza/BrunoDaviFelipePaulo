@@ -27,10 +27,10 @@ struct ShoppingItemRowView: View {
                     .frame(width: 50, height: 50)
             }
             
-            VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .center) {
                 Text(item.title)
                     .font(.headline)
-                
+                Spacer()
                 Text("$ \(calculateTotalValueWithTax(), specifier: "%.2f")")
                     .font(.subheadline)
                     .foregroundColor(.secondary)

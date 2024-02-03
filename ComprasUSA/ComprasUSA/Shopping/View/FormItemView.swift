@@ -28,13 +28,36 @@ struct FormItemView: View {
     
     private var form: some View {
         Form {
-            Section(header: Text("Produto")) {
-                
+            Section(header: Text("NOME DO PRODUTO")) {
+                TextField("Nome", text: $selectedItem.title)
+            }
+            
+            Section(header: Text("IMPOSTO DO ESTADO")) {
+                TextField("Imposto do Estado", text: $selectedItem.itemTax)
+                    .keyboardType(.decimalPad)
+                    .onTapGesture {
+                        hideKeyboard()
+                    }
+            }
+            
+            Section(header: Text("VALOR DO PRODUTO (U$)")) {
+                TextField("Valor", text: $selectedItem.itemValue)
+                    .keyboardType(.decimalPad)
+                    .onTapGesture {
+                        hideKeyboard()
+                    }
+            }
+            
+            Section(header: Text("MEIO DE PAGAMENTO")) {
+                Toggle("Com o cartão?", isOn: $selectedItem.paidWithCard)
+            }
+            
+            Section(header: Text("FOTO")) {
                 PhotosPicker(
                     selection: $selectedImage,
                     matching: .images
                 ) {
-                    Label("Selecione uma foto", systemImage: "photo")
+                    Label("Escolher foto", systemImage: "giftcard.fill")
                 }
                 
                 if let data = selectedItem.selectedImage,
@@ -46,30 +69,10 @@ struct FormItemView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .padding(.top, 10)
                 }
-                
-                TextField("Nome", text: $selectedItem.title)
-                
-                TextField("Valor", text: $selectedItem.itemValue)
-                    .keyboardType(.decimalPad)
-                    .onTapGesture {
-                        hideKeyboard()
-                    }
-            }
-            
-            Section(header: Text("Taxas")) {
-                TextField("Imposto do Estado", text: $selectedItem.itemTax)
-                    .keyboardType(.decimalPad)
-                    .onTapGesture {
-                        hideKeyboard()
-                    }
-            }
-            
-            Section(header: Text("Pagamento")) {
-                Toggle("Com o cartão?", isOn: $selectedItem.paidWithCard)
             }
         }
         .listSectionSpacing(3)
-        .navigationTitle(selectedItem.title.isEmpty ? "Nova compra" : selectedItem.title)
+        .navigationTitle(selectedItem.title.isEmpty ? "Cadastro de produto" : selectedItem.title)
         .onChange(of: selectedImage) {
             Task {
                 itemImage = try? await selectedImage?.loadTransferable(type: Data.self)
@@ -86,6 +89,7 @@ struct FormItemView: View {
         }) {
             Text("Salvar")
         }
+        .buttonStyle(.borderedProminent)
         .disabled(!formIsValid())
     }
     

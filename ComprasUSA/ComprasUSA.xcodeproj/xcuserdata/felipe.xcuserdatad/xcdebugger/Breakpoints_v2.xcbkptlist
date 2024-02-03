@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "33411CEE-154B-4849-9511-1CE4A651238F"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5FC92B42-EB35-4595-B70E-801379C60FFC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ComprasUSA/Shopping/View/FormItemView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
+            landmarkName = "button"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "5FC92B42-EB35-4595-B70E-801379C60FFC - 3dcc35e29bd49147"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComprasUSA.FormItemView.button.getter : some"
+                  moduleName = "ComprasUSA"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/felipe/Documents/Codes/BrunoDaviFelipePaulo/ComprasUSA/ComprasUSA/Shopping/View/FormItemView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "92"
+                  endingLineNumber = "92"
+                  offsetFromSymbolStart = "421">
+               </Location>
+               <Location
+                  uuid = "5FC92B42-EB35-4595-B70E-801379C60FFC - 91ab625d903296cf"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComprasUSA.FormItemView.formIsValid() -&gt; Swift.Bool"
+                  moduleName = "ComprasUSA"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/felipe/Documents/Codes/BrunoDaviFelipePaulo/ComprasUSA/ComprasUSA/Shopping/View/FormItemView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "93"
+                  endingLineNumber = "93"
+                  offsetFromSymbolStart = "105">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

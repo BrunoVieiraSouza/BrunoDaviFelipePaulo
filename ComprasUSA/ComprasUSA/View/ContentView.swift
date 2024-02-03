@@ -25,7 +25,7 @@ struct ContentView: View {
                 ItemListingView(selectedItem: $selectedItem, isPresented: $isPresented)
             }
             .tabItem {
-                Image(systemName: "cart")
+                Image(systemName: "cart.circle")
                 Text("Compras")
             }
             
@@ -33,7 +33,7 @@ struct ContentView: View {
                 AjustesView()
             }
             .tabItem {
-                Image(systemName: "gear")
+                Image(systemName: "gear.circle")
                 Text("Ajustes")
             }
             
@@ -41,7 +41,7 @@ struct ContentView: View {
                 ResumoCompraView()
             }
             .tabItem {
-                Image(systemName: "dollarsign")
+                Image(systemName: "dollarsign.circle")
                 Text("Total da compra")
             }
         }
