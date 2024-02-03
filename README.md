@@ -4,9 +4,9 @@
 
 Este projeto é um aplicativo iOS desenvolvido como parte de uma atividade acadêmica pela turma de desenvolvimento mobile. O aplicativo "Compras USA" foi criado usando Swift e SwiftUI, e é projetado para auxiliar os usuários na gestão de suas compras realizadas nos Estados Unidos. Ele oferece funcionalidades como o registro de produtos, cálculo automático de impostos, conversão de moeda e um resumo detalhado das compras.
 ## Telas
-<img src="https://github.com/BrunoVieiraSouza/BrunoDaviFelipePaulo/assets/19232807/b513a110-f552-418d-ba94-1e4046113430" width="150" height="300">
-<img src="https://github.com/BrunoVieiraSouza/BrunoDaviFelipePaulo/assets/19232807/7ae39c82-44e2-4d44-b8ba-237429712a1f" width="150" height="300">
-<img src="https://github.com/BrunoVieiraSouza/BrunoDaviFelipePaulo/assets/19232807/956a4195-580b-43eb-9e3f-82d441805c31" width="150" height="300">
+<img src="https://github.com/BrunoVieiraSouza/BrunoDaviFelipePaulo/assets/19232807/d9975d44-7bfd-4563-99f1-1625e07ebf49" width="150" height="300">
+<img src="https://github.com/BrunoVieiraSouza/BrunoDaviFelipePaulo/assets/19232807/795b1c3d-5c54-452c-b341-815a115f4536" width="150" height="300">
+<img src="https://github.com/BrunoVieiraSouza/BrunoDaviFelipePaulo/assets/19232807/61083b65-1046-4d2e-b0ad-4e159a715eb9" width="150" height="300">
 <img src="https://github.com/BrunoVieiraSouza/BrunoDaviFelipePaulo/assets/19232807/89821cef-ab0b-46a9-8342-1c54829c0d90" width="150" height="300">
 <img src="https://github.com/BrunoVieiraSouza/BrunoDaviFelipePaulo/assets/19232807/4266ceea-a755-4a4b-85e2-6ae655e13f5d" width="150" height="300">
 
