@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ShoppingCell: View {
+struct ShoppingItemRowView: View {
     var item: ShoppingItem
     
     var body: some View {
